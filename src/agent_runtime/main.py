@@ -1,8 +1,6 @@
-from uuid import uuid4
+from fastapi import FastAPI
 
-from fastapi import FastAPI, status
-
-from agent_runtime.models import JobCreate, JobResponse, JobStatus
+from agent_runtime.api.jobs import router as jobs_router
 
 app = FastAPI(
     title="Agent Runtime",
@@ -16,14 +14,4 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.post(
-    "/jobs",
-    response_model=JobResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-def create_job(job: JobCreate) -> JobResponse:
-    return JobResponse(
-        id=str(uuid4()),
-        task=job.task,
-        status=JobStatus.QUEUED,
-    )
+app.include_router(jobs_router)
